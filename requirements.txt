@@ -17,7 +17,14 @@ django-mustachejs
 south
 psycopg2
 
+# GIS
+simplejson
+vectorformats
+
 # Testing
 django-nose
 django-jasmine
 django-debug-toolbar
+
+# Misc
+bpython
