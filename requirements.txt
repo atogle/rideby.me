@@ -13,6 +13,9 @@ git+git://github.com/mjumbewu/django-backbonejs.git#egg=django-backbonejs
 # Mustache templates for the front-end
 django-mustachejs
 
+# The REST framework to support an API
+djangorestframework
+
 # Database admin
 south
 psycopg2
