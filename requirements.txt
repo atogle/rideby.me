@@ -15,6 +15,7 @@ django-mustachejs
 
 # Database admin
 south
+psycopg2
 
 # Testing
 django-nose
