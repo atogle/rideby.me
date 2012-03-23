@@ -2,11 +2,10 @@
 *~
 
 # Local or private project settings
-*/src/settings/local.py
+src/project/settings/local.py
 
 # Virtual environment
 .env/
 
 # Pip-built stuff
-src/
 build/
