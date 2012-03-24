@@ -8,34 +8,25 @@ def stops(request):
     radius = float(request.GET.get('radius', 800))
     point = get_point(request)
 
-    stops = Stop.objects.filter(geom__distance_lte=(point, radius))
-    geojson = queryset_to_geojson(stops, ['id', 'name'])
-
-    return HttpResponse(geojson, mimetype='application/json')
+    return HttpResponse(get_stop_geojson(point, radius),
+        mimetype='application/json')
 
 
 def routes(request):
     radius = float(request.GET.get('radius', 800))
     point = get_point(request)
 
-    routes = Route.objects.filter(
-        stop__geom__distance_lte=(point, radius)).distinct()
-    geojson = queryset_to_geojson(routes, ['id', 'short_name', 'long_name'])
-
-    return HttpResponse(geojson, mimetype='application/json')
+    return HttpResponse(get_route_geojson(point, radius),
+        mimetype='application/json')
 
 
 def transit(request):
     radius = float(request.GET.get('radius', 800))
     point = get_point(request)
 
-    stops = Stop.objects.filter(geom__distance_lte=(point, radius))
-    routes = Route.objects.filter(
-        stop__geom__distance_lte=(point, radius)).distinct()
-
     geojson = '{"stops": %s, "routes": %s}' % (
-        queryset_to_geojson(stops, ['id', 'name']),
-        queryset_to_geojson(routes, ['id', 'short_name', 'long_name'])
+        get_stop_geojson(point, radius),
+        get_route_geojson(point, radius)
     )
 
     return HttpResponse(geojson, mimetype='application/json')
@@ -52,3 +43,14 @@ def get_point(request):
     lat = float(request.GET.get('lat', 0))
 
     return Point(lon, lat)
+
+
+def get_stop_geojson(point, radius):
+    stops = Stop.objects.filter(geom__distance_lte=(point, radius))
+    return queryset_to_geojson(stops, ['id', 'name'])
+
+
+def get_route_geojson(point, radius):
+    routes = Route.objects.filter(
+        stop__geom__distance_lte=(point, radius)).distinct()
+    return queryset_to_geojson(routes, ['id', 'short_name', 'long_name'])
