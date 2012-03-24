@@ -20,4 +20,5 @@ urlpatterns = patterns('',
 
     url(r'^stops/?$', 'project.views.stops', name='stops'),
     url(r'^routes/?$', 'project.views.routes', name='routes'),
+    url(r'^transit/?$', 'project.views.transit', name='transit'),
 )
