@@ -24,10 +24,16 @@ def transit(request):
     radius = float(request.GET.get('radius', 800))
     point = get_point(request)
 
-    geojson = '{"stops": %s, "routes": %s}' % (
-        get_stop_geojson(point, radius),
-        get_route_geojson(point, radius)
-    )
+    geojson = """
+        {
+          "center": {"lat":%f, "lon":%f, "radius":%d},
+          "stops": %s,
+          "routes": %s
+        } """ % (
+            point.y, point.x, radius,
+            get_stop_geojson(point, radius),
+            get_route_geojson(point, radius)
+        )
 
     return HttpResponse(geojson, mimetype='application/json')
 
