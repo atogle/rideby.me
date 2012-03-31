@@ -24,23 +24,33 @@ var RideByMe = RideByMe || {};
       self.map = new L.Map('map');
 
       // Init all of the overlays
-      self.stopLayer = new L.GeoJSON();
       self.routeLayer = new L.GeoJSON();
+      self.stopLayer = new L.GeoJSON(null, {
+        pointToLayer: function (latlng){
+          return new L.CircleMarker(latlng, {
+            radius: 3,
+            fillColor: "#ff7800",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+          });
+        }
+      });
       self.walkshedLayer = new L.Circle(self.center, self.radius, {
         color: '#000',
         weight: 2,
         opacity: 1,
-        fillOpacity: 0.2
+        fillOpacity: 0.1
       });
-
-      // Add all of the layers to the map in the appropriate z-order
-      self.map.addLayer(cloudmade);
-      self.map.addLayer(self.stopLayer);
-      self.map.addLayer(self.routeLayer);
-      self.map.addLayer(self.walkshedLayer);
 
       // Setup the route layer when the geojson gets parsed
       self.routeLayer.on("featureparse", function (e) {
+        L.Util.extend(e.layer.options, {
+          opacity: 0.9,
+          weight: 2
+        });
+
         e.layer.bindPopup('<p>'+e.properties.short_name+': '+e.properties.long_name+'</p>');
       });
 
@@ -55,6 +65,13 @@ var RideByMe = RideByMe || {};
         alert(e.message);
       });
 
+      // Add all of the layers to the map in the appropriate z-order
+      self.map.addLayer(cloudmade);
+      self.map.addLayer(self.walkshedLayer);
+      self.map.addLayer(self.stopLayer);
+      self.map.addLayer(self.routeLayer);
+
+      // Init geolocation
       self.map.locate();
     },
 
@@ -76,7 +93,7 @@ var RideByMe = RideByMe || {};
         .addGeoJSON(self.model.get('routes'));
 
       // Zoom to the point
-      self.map.setView(latLng, 15);
+      self.map.setView(latLng, 14);
     }
   });
 })(RideByMe);
