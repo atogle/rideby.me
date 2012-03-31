@@ -1,11 +1,12 @@
 var RideByMe = RideByMe || {};
 
 (function(R) {
-
-
   // The view for the app, of course
   R.AppView = Backbone.View.extend({
     el: '#map',
+
+    radius: 800,
+    center: new L.LatLng(39.952335, -75.163789),
 
     initialize: function() {
       var self = this,
@@ -13,48 +14,69 @@ var RideByMe = RideByMe || {};
           cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
           cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttribution});
 
-      // Init the model
+      // Init the model to fetch routes and stations
       self.model = new R.TransitModel();
 
       // Render thyself when the transit data show up
       self.model.bind('change', self.render, self);
 
+      // Init the map
       self.map = new L.Map('map');
-      self.stops = new L.GeoJSON();
-      self.routes = new L.GeoJSON();
 
+      // Init all of the overlays
+      self.stopLayer = new L.GeoJSON();
+      self.routeLayer = new L.GeoJSON();
+      self.walkshedLayer = new L.Circle(self.center, self.radius, {
+        color: '#000',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.2
+      });
+
+      // Add all of the layers to the map in the appropriate z-order
       self.map.addLayer(cloudmade);
-      self.map.addLayer(self.stops);
-      self.map.addLayer(self.routes);
+      self.map.addLayer(self.stopLayer);
+      self.map.addLayer(self.routeLayer);
+      self.map.addLayer(self.walkshedLayer);
 
-      self.map.on('locationfound', onLocationFound);
-      self.map.on('locationerror', onLocationError);
+      // Setup the route layer when the geojson gets parsed
+      self.routeLayer.on("featureparse", function (e) {
+        e.layer.bindPopup('<p>'+e.properties.short_name+': '+e.properties.long_name+'</p>');
+      });
+
+      // Do a model fetch when geolocation finishes
+      self.map.on('locationfound', function(e){
+        // self.model.fetch({ data: {lon:e.latlng.lng, lat:e.latlng.lat, radius:self.radius} });
+        self.model.fetch({ data: {lon:-75.1591, lat:39.9376, radius:self.radius} });
+      });
+      // Do a model fetch for city hall if geolocation fails
+      self.map.on('locationerror', function(e){
+        self.model.fetch({ data: {lon:self.center.lng, lat:self.center.lat, radius:self.radius} });
+        alert(e.message);
+      });
 
       self.map.locate();
-
-      function onLocationFound(e) {
-        // Fetch the first batch of surveys
-        // self.model.fetch({ data: {lon:e.latlng.lng, lat:e.latlng.lat, radius:800} });
-
-        self.model.fetch({ data: {lon:-75.1591, lat:39.9376, radius:800} });
-      }
-
-      function onLocationError(e) {
-        alert(e.message);
-      }
     },
 
     render: function() {
       var self = this,
-          center = self.model.get('center'),
-          latLng = new L.LatLng(center.lat, center.lon),
-          circle = new L.Circle(latLng, center.radius);
+          walkshed = self.model.get('walkshed'),
+          latLng = new L.LatLng(walkshed.lat, walkshed.lon);
 
-      // self.stops.addGeoJSON(self.model.get('stops'));
-      self.routes.addGeoJSON(self.model.get('routes'));
+      // Update walkshed
+      self.walkshedLayer.setLatLng(latLng);
 
+      // Update stops
+      self.stopLayer
+        .clearLayers()
+        .addGeoJSON(self.model.get('stops'));
+      // Update routes
+      self.routeLayer
+        .clearLayers()
+        .addGeoJSON(self.model.get('routes'));
+
+      // Zoom to the point
       self.map.setView(latLng, 15);
-      self.map.addLayer(circle);
     }
   });
 })(RideByMe);

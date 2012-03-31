@@ -26,7 +26,7 @@ def transit(request):
 
     geojson = """
         {
-          "center": {"lat":%f, "lon":%f, "radius":%d},
+          "walkshed": {"lat":%f, "lon":%f, "radius":%d},
           "stops": %s,
           "routes": %s
         } """ % (
