@@ -19,6 +19,8 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <link href="{{ STATIC_URL }}style.css" rel="stylesheet" />
+
 
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="bootstrap-2.0.2/ico/favicon.ico">
@@ -50,8 +52,9 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
-        <div class="span12">map
+        <div class="span12">
           <div id="map"></div>
+          <button id="refresh-btn" class="btn btn-primary btn-large" href="#">Refresh</button>
         </div>
       </div>
     </div>

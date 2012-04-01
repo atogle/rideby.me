@@ -21,7 +21,10 @@ var RideByMe = RideByMe || {};
       self.model.bind('change', self.render, self);
 
       // Init the map
-      self.map = new L.Map('map');
+      self.map = new L.Map('map', {
+        center: self.center,
+        zoom: 14
+      });
 
       // Init all of the overlays
       self.routeLayer = new L.GeoJSON();
@@ -37,7 +40,9 @@ var RideByMe = RideByMe || {};
           });
         }
       });
-      self.walkshedLayer = new L.Circle(self.center, self.radius, {
+
+      // Init to null island so we don't see a jumping circle
+      self.walkshedLayer = new L.Circle(new L.LatLng(0, 0), self.radius, {
         color: '#000',
         weight: 2,
         opacity: 1,
@@ -47,6 +52,7 @@ var RideByMe = RideByMe || {};
       // Setup the route layer when the geojson gets parsed
       self.routeLayer.on("featureparse", function (e) {
         L.Util.extend(e.layer.options, {
+          color: '#004070',
           opacity: 0.9,
           weight: 2
         });
@@ -73,6 +79,12 @@ var RideByMe = RideByMe || {};
 
       // Init geolocation
       self.map.locate();
+
+      // Bind render button
+      $('#refresh-btn').click(function(){
+        var center = self.map.getCenter();
+        self.model.fetch({ data: {lon:center.lng, lat:center.lat, radius:self.radius} });
+      });
     },
 
     render: function() {
@@ -87,13 +99,14 @@ var RideByMe = RideByMe || {};
       self.stopLayer
         .clearLayers()
         .addGeoJSON(self.model.get('stops'));
+
       // Update routes
       self.routeLayer
         .clearLayers()
         .addGeoJSON(self.model.get('routes'));
 
       // Zoom to the point
-      self.map.setView(latLng, 14);
+      self.map.panTo(latLng);
     }
   });
 })(RideByMe);
