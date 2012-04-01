@@ -80,10 +80,15 @@ var RideByMe = RideByMe || {};
       // Init geolocation
       self.map.locate();
 
-      // Bind render button
+      // Bind refresh button
       $('#refresh-btn').click(function(){
         var center = self.map.getCenter();
         self.model.fetch({ data: {lon:center.lng, lat:center.lat, radius:self.radius} });
+      });
+
+      // Bind geolocation button
+      $('#locate-btn').click(function(){
+        self.map.locate();
       });
     },
 

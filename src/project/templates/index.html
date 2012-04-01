@@ -33,19 +33,23 @@
     <div class="navbar">
       <div class="navbar-inner">
         <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<!--
+           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">RideBy.Me</a>
-          <div class="nav-collapse">
+ -->
+           <a class="brand" href="#">RideBy.Me</a>
+<!--
+           <div class="nav-collapse">
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
             </ul>
-          </div><!--/.nav-collapse -->
+          </div>
+-->
         </div>
       </div>
     </div>
@@ -54,7 +58,10 @@
       <div class="row-fluid">
         <div class="span12">
           <div id="map"></div>
-          <button id="refresh-btn" class="btn btn-primary btn-large" href="#">Refresh</button>
+          <div id="update-btns" class="">
+            <button id="refresh-btn" class="btn btn-primary btn-large">Refresh</button>
+            <button id="locate-btn" class="btn btn-primary btn-large"><i class="icon-road icon-white"></i></button>
+          </div>
         </div>
       </div>
     </div>
